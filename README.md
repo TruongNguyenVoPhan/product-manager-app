@@ -59,11 +59,13 @@ project-manager/
 ```bash
 git clone https://github.com/TruongNguyenVoPhan/product-manager-app.git
 cd product-manager-app
+``` 
 ### 2.Setup and run backend
 cd backend
 npm install
 node index.js
 mongoose.connect('mongodb+srv://<username>:<password>@cluster0.mongodb.net/product_manager');
+
 ### 3. Setup and run frontend
 cd ../frontend
 npm install
