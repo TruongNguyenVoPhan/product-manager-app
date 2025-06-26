@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //  API backend đang chạy ở đây
 const API_URL = "https://product-api-7ric.onrender.com/products";
@@ -10,6 +12,8 @@ function App() {
   const [name, setName] = useState('');                     // Tên sản phẩm mới
   const [price, setPrice] = useState('');                   // Giá sản phẩm mới
   const [editingProduct, setEditingProduct] = useState(null); // Sản phẩm đang sửa (nếu có)
+  const [showConfirm, setShowConfirm] = useState(false); // Hiển thị thông báo xác nhận
+  const [productToDelete, setProductToDelete] = useState(null); // Sản phẩm cần xoá
 
   //  Lấy dữ liệu sản phẩm từ API khi trang tải
   const fetchProducts = async () => {
@@ -21,25 +25,41 @@ function App() {
   const addProduct = async () => {
     if (!name || !price) return alert("Name and price are required!");
     await axios.post(API_URL, { name, price: Number(price) });
+    toast.success("Product added!");
     setName('');
     setPrice('');
     fetchProducts(); // Refresh danh sách
   };
 
   //  Xoá sản phẩm theo ID
-  const deleteProduct = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
-    fetchProducts();
+  const confirmDelete = (product) => {
+    setProductToDelete(product);
+    setShowConfirm(true);
   };
+
+  const handleDeleteConfirmed = async () => {
+    await axios.delete(`${API_URL}/${productToDelete._id}`);
+    setShowConfirm(false);
+    setProductToDelete(null);
+    fetchProducts();
+    toast.success("Product deleted!");
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setProductToDelete(null);
+  };
+
 
   // Sửa sản phẩm đã chọn (PUT)
   const updateProduct = async () => {
-    await axios.put(`${API_URL}/${editingProduct.id}`, {
+    await axios.put(`${API_URL}/${editingProduct._id}`, {
       name: editingProduct.name,
       price: Number(editingProduct.price),
     });
     setEditingProduct(null); // Xoá form sửa
     fetchProducts();         // Cập nhật danh sách
+    toast.success("Product updated!");
   };
 
   // 🌀 useEffect: gọi API lần đầu khi load trang
@@ -70,15 +90,64 @@ function App() {
       </div>
 
       {/*  Danh sách sản phẩm */}
-      <ul>
-        {products.map((p) => (
-          <li key={p.id}>
-            {p.name} - ${p.price}{' '}
-            <button onClick={() => deleteProduct(p.id)}>Delete</button>{' '}
-            <button onClick={() => setEditingProduct(p)}>Edit</button>
-          </li>
+      <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <table className="table table-striped table-bordered">
+      <thead className="table-dark">
+        <tr>
+          <th>No.</th>
+          <th>Product Name</th>
+          <th>Price ($)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {products.map((p, index) => (
+          <tr key={p._id}>
+            <td>{index + 1}</td>
+            <td>{p.name}</td>
+            <td>{p.price}</td>
+            <td>
+              <button
+                onClick={() => setEditingProduct(p)}
+                className="btn btn-warning btn-sm me-2"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => confirmDelete(p)}
+                className="btn btn-danger btn-sm"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
         ))}
-      </ul>
+      </tbody>
+        </table>
+
+      </table>
+
+      {/* Hiển thị thông báo xác nhận xoá */}
+      {/* Bootstrap Confirm Modal */}
+      {showConfirm && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ background: '#00000066' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Delete</h5>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete <strong>{productToDelete?.name}</strong>?</p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={cancelDelete}>Cancel</button>
+                <button className="btn btn-danger" onClick={handleDeleteConfirmed}>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/*  Form sửa sản phẩm */}
       {editingProduct && (
@@ -107,5 +176,6 @@ function App() {
     </div>
   );
 }
+<ToastContainer position="top-right" autoClose={3000} />
 
 export default App;
