@@ -2,12 +2,16 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 const cors = require('cors');
+const authRoutes = require('./authRoutes'); // Đường dẫn đến authRoutes
+const authMiddleware = require('./authMiddleware'); // Middleware xác thực
 
 require('./db'); // Kết nối MongoDB
 const Product = require('./productModel'); // Model
 
 app.use(express.json());
 app.use(cors());
+app.use('/auth', authRoutes); // Sử dụng authRoutes
+app.use('/products',authMiddleware); // Sử dụng middleware xác thực cho các route bên dưới
 
 // Get all products
 app.get('/products', async (req, res) => {
@@ -35,5 +39,5 @@ app.delete('/products/:id', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(` Server running at http://localhost:${PORT}`);
 });
