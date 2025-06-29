@@ -4,6 +4,7 @@ import axios from 'axios';
 import Login from './Login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Register from './Register';
 
 const API_URL = "https://product-api-7ric.onrender.com/products";
 
@@ -15,6 +16,8 @@ function App() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [showRegister, setShowRegister] = useState(false);
+
 
   const getAuthHeader = () => ({
     headers: {
@@ -94,13 +97,34 @@ function App() {
 
 
   if (!isLoggedIn) {
-    return (
-      <>
-        <Login onLogin={() => setIsLoggedIn(true)} />
-        <ToastContainer />
-      </>
-    );
-  }
+  return (
+    <div className="container mt-4">
+      <ToastContainer />
+      {showRegister ? (
+        <>
+          <Register onRegisterSuccess={() => setShowRegister(false)} />
+          <p className="mt-3">
+            Already have an account?{" "}
+            <button className="btn btn-link" onClick={() => setShowRegister(false)}>
+              Login here
+            </button>
+          </p>
+        </>
+      ) : (
+        <>
+          <Login onLogin={() => setIsLoggedIn(true)} />
+          <p className="mt-3">
+            Don't have an account?{" "}
+            <button className="btn btn-link" onClick={() => setShowRegister(true)}>
+              Register here
+            </button>
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
 
 
   return (
