@@ -6,10 +6,10 @@ function ProductCard({ product, onEdit, onDelete }) {
   return (
     <div className="product-card">
       <img
-        src={product.image || "https://via.placeholder.com/300x200?text=No+Image"}
+        src={product.imageUrl || "/images/noimage.png"}
         alt={product.name}
         className="product-image"
-      />
+        />
       <div className="product-title">{product.name}</div>
       <div className="product-price">${product.price}</div>
       <div className="product-actions">

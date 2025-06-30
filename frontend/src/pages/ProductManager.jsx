@@ -3,7 +3,8 @@ import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import { toast } from 'react-toastify';
 
-const API_URL = 'https://product-api-7ric.onrender.com/products';
+//const API_URL = 'https://product-api-7ric.onrender.com/products';
+const API_URL = 'http://localhost:3000/products';
 
 function ProductManager({ onLogout }) {
   const [products, setProducts] = useState([]);
@@ -30,27 +31,35 @@ function ProductManager({ onLogout }) {
   };
 
   const addOrUpdateProduct = async () => {
-    if (!name || !price) return toast.warn('Name and price required!');
-    try {
-      const payload = { name, price: Number(price), imageUrl: image };
+  if (!name || !price) return toast.warn('Name and price required!');
+  
+  // luôn đảm bảo imageUrl tồn tại (dù là chuỗi rỗng)
+    const payload = {
+        name: name.trim(),
+        price: Number(price),
+        imageUrl: image.trim() || "", 
+    };
 
-      if (editingProduct) {
+    try {
+        if (editingProduct) {
         await axios.put(`${API_URL}/${editingProduct._id}`, payload, getAuthHeader());
         toast.success('Product updated!');
-      } else {
+        } else {
         await axios.post(API_URL, payload, getAuthHeader());
         toast.success('Product added!');
-      }
+        }
 
-      setName('');
-      setPrice('');
-      setImage('');
-      setEditingProduct(null);
-      fetchProducts();
+        setName('');
+        setPrice('');
+        setImage('');
+        setEditingProduct(null);
+        fetchProducts();
     } catch (err) {
-      toast.error('Failed to save product.');
+        toast.error('Failed to save product.');
+        console.error("Error saving product:", err.response?.data || err.message);
     }
-  };
+    };
+
 
   const deleteProduct = async (product) => {
     if (!window.confirm(`Delete "${product.name}"?`)) return;

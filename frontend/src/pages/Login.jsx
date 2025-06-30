@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import '../styles/Login.css'; // Assuming you have a CSS file for styles
+import { login, getProducts } from '../services/api';
+
 function Login({ onLogin, onSwitch }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +15,8 @@ function Login({ onLogin, onSwitch }) {
     }
 
     try {
-      const res = await axios.post('https://product-api-7ric.onrender.com/auth/login', {
+      //const res = await axios.post('https://product-api-7ric.onrender.com/auth/login', {
+      const res = await axios.post('http://localhost:3000/auth/login', {
         username,
         password
       });
