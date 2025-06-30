@@ -3,8 +3,7 @@ import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import { toast } from 'react-toastify';
 
-//const API_URL = 'https://product-api-7ric.onrender.com/products';
-const API_URL = 'http://localhost:3000/products';
+const API_URL = 'https://product-api-7ric.onrender.com/products';
 
 function ProductManager({ onLogout }) {
   const [products, setProducts] = useState([]);

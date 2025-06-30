@@ -15,8 +15,7 @@ function Login({ onLogin, onSwitch }) {
     }
 
     try {
-      //const res = await axios.post('https://product-api-7ric.onrender.com/auth/login', {
-      const res = await axios.post('http://localhost:3000/auth/login', {
+      const res = await axios.post('https://product-api-7ric.onrender.com/auth/login', {
         username,
         password
       });
