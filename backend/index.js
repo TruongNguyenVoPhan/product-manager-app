@@ -28,10 +28,25 @@ app.post('/products', async (req, res) => {
 
 // Update product
 app.put('/products/:id', async (req, res) => {
-  console.log("Update body:", req.body); // 👈 debug
-  const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(updated);
+  try {
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          name: req.body.name,
+          price: req.body.price,
+          imageUrl: req.body.imageUrl || '',
+        },
+      },
+      { new: true, runValidators: true }
+    );
+    res.json(updated);
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ message: "Update failed", error });
+  }
 });
+
 
 // Delete product
 app.delete('/products/:id', async (req, res) => {
