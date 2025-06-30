@@ -32,7 +32,7 @@ function ProductManager({ onLogout }) {
   const addOrUpdateProduct = async () => {
     if (!name || !price) return toast.warn('Name and price required!');
     try {
-      const payload = { name, price: Number(price), image };
+      const payload = { name, price: Number(price), imageUrl: image };
 
       if (editingProduct) {
         await axios.put(`${API_URL}/${editingProduct._id}`, payload, getAuthHeader());
@@ -115,7 +115,7 @@ function ProductManager({ onLogout }) {
                 setEditingProduct(p);
                 setName(p.name);
                 setPrice(p.price);
-                setImage(p.image || '');
+                setImage(p.imageUrl || '');
               }}
               onDelete={deleteProduct}
             />

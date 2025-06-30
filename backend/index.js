@@ -28,6 +28,7 @@ app.post('/products', async (req, res) => {
 
 // Update product
 app.put('/products/:id', async (req, res) => {
+  console.log("Update body:", req.body); // 👈 debug
   const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
   res.json(updated);
 });
