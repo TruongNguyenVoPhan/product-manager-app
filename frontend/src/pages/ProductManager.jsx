@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
+import ProductForm from '../components/ProductForm';
+import ProductList from '../components/ProductList';
 import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
 
@@ -86,54 +87,23 @@ function ProductManager({ onLogout }) {
           </button>
         </div>
 
-        <div className="card p-4 mb-4">
-          <h5 className="mb-3">{editingProduct ? 'Edit Product' : 'Add Product'}</h5>
-          <input
-            className="form-control mb-2"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            className="form-control mb-2"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          <input
-            className="form-control mb-3"
-            placeholder="Image URL"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-          />
-          <div className="d-flex">
-            <button className="btn btn-success me-2" onClick={addOrUpdateProduct}>
-              {editingProduct ? 'Update' : 'Add'}
-            </button>
-            {editingProduct && (
-              <button className="btn btn-secondary" onClick={() => setEditingProduct(null)}>
-                Cancel
-              </button>
-            )}
-          </div>
-        </div>
+        <ProductForm
+          product={editingProduct}
+          onSave={addOrUpdateProduct}
+          onCancel={() => setEditingProduct(null)}
+        />
 
-        <div className="row">
-          {products.map((product) => (
-            <div className="col-md-4 mb-4" key={product._id}>
-              <ProductCard
-                product={product}
-                onEdit={(p) => {
-                  setEditingProduct(p);
-                  setName(p.name);
-                  setPrice(p.price);
-                  setImage(p.imageUrl || '');
-                }}
-                onDelete={deleteProduct}
-              />
-            </div>
-          ))}
-        </div>
+        <ProductList
+          products={products}
+          onEdit={(product) => {
+            setEditingProduct(product);
+            setName(product.name);
+            setPrice(product.price);
+            setImage(product.imageUrl || '');
+          }}
+          onDelete={deleteProduct}
+        />
+
       </div>
     </div>
   );
