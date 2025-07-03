@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
 import ProductForm from '../components/ProductForm';
-import ProductList from '../components/ProductList';
+import ProductDetail from '../components/ProductDetail';
+import Dashboard from '../components/Dashboard';
 import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
 
@@ -10,10 +12,9 @@ const API_URL = 'https://product-api-7ric.onrender.com/products';
 
 function ProductManager({ onLogout }) {
   const [products, setProducts] = useState([]);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [image, setImage] = useState('');
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [view, setView] = useState('dashboard');
 
   const getAuthHeader = () => ({
     headers: {
@@ -32,32 +33,27 @@ function ProductManager({ onLogout }) {
     }
   };
 
-  const addOrUpdateProduct = async () => {
-    if (!name || !price) return toast.warn('Name and price required!');
-
+  const handleSaveProduct = async (product) => {
     const payload = {
-      name: name.trim(),
-      price: Number(price),
-      imageUrl: image.trim() || '',
+      name: product.name.trim(),
+      price: Number(product.price),
+      imageUrl: product.imageUrl.trim() || '',
     };
 
     try {
-      if (editingProduct) {
-        await axios.put(`${API_URL}/${editingProduct._id}`, payload, getAuthHeader());
+      if (product._id) {
+        await axios.put(`${API_URL}/${product._id}`, payload, getAuthHeader());
         toast.success('Product updated!');
       } else {
         await axios.post(API_URL, payload, getAuthHeader());
         toast.success('Product added!');
       }
 
-      setName('');
-      setPrice('');
-      setImage('');
-      setEditingProduct(null);
+      setSelectedProduct(null);
+      setShowForm(false);
       fetchProducts();
     } catch (err) {
       toast.error('Failed to save product.');
-      console.error('Error saving product:', err.response?.data || err.message);
     }
   };
 
@@ -78,32 +74,73 @@ function ProductManager({ onLogout }) {
 
   return (
     <div className="dashboard d-flex">
-      <Sidebar />
+      <Sidebar
+        view={view} // ✅ truyền view vào để Sidebar biết đang ở đâu
+        onNavigate={(view) => {
+          setView(view);
+          setShowForm(false);
+          setSelectedProduct(null);
+        }}
+        onLogout={onLogout}
+        onAdd={() => {
+          setView('products');
+          setShowForm(true);
+          setSelectedProduct(null);
+        }}
+      />
       <div className="main-content flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2>🛍️ Product Manager</h2>
-          <button className="btn btn-outline-danger" onClick={onLogout}>
-            Logout
-          </button>
+          <button className="btn btn-outline-danger" onClick={onLogout}>Logout</button>
         </div>
 
-        <ProductForm
-          product={editingProduct}
-          onSave={addOrUpdateProduct}
-          onCancel={() => setEditingProduct(null)}
-        />
+        {view === 'dashboard' && <Dashboard products={products} />}
 
-        <ProductList
-          products={products}
-          onEdit={(product) => {
-            setEditingProduct(product);
-            setName(product.name);
-            setPrice(product.price);
-            setImage(product.imageUrl || '');
-          }}
-          onDelete={deleteProduct}
-        />
+        {view === 'products' && (
+          <>
+            {!showForm && !selectedProduct && (
+              <div className="mb-4">
+                <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Product</button>
+              </div>
+            )}
 
+            {showForm && (
+              <ProductForm
+                product={selectedProduct}
+                onSave={handleSaveProduct}
+                onCancel={() => {
+                  setShowForm(false);
+                  setSelectedProduct(null);
+                }}
+              />
+            )}
+
+            {selectedProduct && !showForm && (
+              <ProductDetail
+                product={selectedProduct}
+                onBack={() => setSelectedProduct(null)}
+              />
+            )}
+
+            {!showForm && !selectedProduct && (
+              <div className="row">
+                {products.map((product) => (
+                  <div className="col-md-4 mb-4" key={product._id}>
+                    <ProductCard
+                      product={product}
+                      onEdit={() => {
+                        setShowForm(true);
+                        setSelectedProduct(product);
+                      }}
+                      onDelete={deleteProduct}
+                      onView={() => setSelectedProduct(product)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

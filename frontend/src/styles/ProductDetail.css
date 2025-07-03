@@ -1,0 +1,11 @@
+/* styles/ProductDetail.css */
+.product-detail {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.product-detail img {
+  max-height: 100px; 
+  width: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}

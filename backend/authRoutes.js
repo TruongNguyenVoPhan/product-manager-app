@@ -6,22 +6,33 @@ const User = require('./userModel');
 
 const SECRET =  'N27062025J'; // Thay bằng secret của bạn
 
+
 // Đăng ký người dùng mới
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ message: 'Username and password are required' });
+  const { username, password, email } = req.body;
+  if (!username || !password || !email) {
+    return res.status(400).json({ message: 'Username, password and email are required' });
+  }
+
+  try {
+    // 👉 Kiểm tra username hoặc email đã tồn tại chưa
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username or email already exists' });
     }
-    
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error registering user', error });
-    }
+
+    // Mã hóa password và tạo user mới
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, password: hashedPassword, email });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering user', error });
+  }
 });
+
+
 
 // Đăng nhập
 router.post('/login', async (req, res) => {

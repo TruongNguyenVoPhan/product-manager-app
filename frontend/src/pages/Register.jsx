@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import '../styles/Register.css'; // (tùy chọn)
 
 function Register({ onRegisterSuccess, onSwitchToLogin }) {
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,6 +17,7 @@ function Register({ onRegisterSuccess, onSwitchToLogin }) {
 
     try {
       await axios.post("https://product-api-7ric.onrender.com/auth/register", {
+        email,
         username,
         password,
       });
@@ -30,6 +32,14 @@ function Register({ onRegisterSuccess, onSwitchToLogin }) {
     <div className="d-flex align-items-center justify-content-center vh-100" style={{ background: "#F4F4F4" }}>
       <div className="card p-4 shadow" style={{ maxWidth: "400px", borderRadius: "16px", width: "100%" }}>
         <h3 className="mb-4 text-center fw-bold">Create an account</h3>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="form-control mb-3"
+          style={{ borderRadius: "8px" }}
+        />
 
         <input
           type="text"

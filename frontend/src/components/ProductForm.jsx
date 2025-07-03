@@ -10,44 +10,63 @@ function ProductForm({ product, onSave, onCancel }) {
       setName(product.name);
       setPrice(product.price);
       setImageUrl(product.imageUrl);
-    } else {
-      setName('');
-      setPrice('');
-      setImageUrl('');
     }
   }, [product]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name || !price) return alert("Please fill in all fields");
     onSave({ ...product, name, price, imageUrl });
   };
 
   return (
-    <div className="card p-3 mb-4">
-      <h5 className="mb-3">{product ? 'Edit Product' : 'Add Product'}</h5>
-      <input
-        className="form-control mb-2"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        className="form-control mb-2"
-        placeholder="Price"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <input
-        className="form-control mb-3"
-        placeholder="Image URL"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-      />
-      <div className="d-flex">
-        <button className="btn btn-success me-2" onClick={handleSubmit}>Save</button>
-        {onCancel && (
-          <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
-        )}
-      </div>
+    <div className="product-form card p-4 mb-4">
+      <h4 className="mb-4 fw-bold">
+        {product ? 'Edit Product' : 'Add New Product'}
+      </h4>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Product Name</label>
+          <input
+            className="form-control"
+            placeholder="Enter product name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label fw-semibold">Price</label>
+          <input
+            className="form-control"
+            placeholder="Enter price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            type="number"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="form-label fw-semibold">Image URL</label>
+          <input
+            className="form-control"
+            placeholder="https://example.com/image.jpg"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+        </div>
+
+        <div className="d-flex gap-2">
+          <button type="submit" className="btn btn-primary w-100">
+            {product ? 'Update' : 'Add'}
+          </button>
+          {onCancel && (
+            <button type="button" className="btn btn-outline-secondary w-100" onClick={onCancel}>
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
     </div>
   );
 }
