@@ -4,9 +4,10 @@ import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
 import ProductForm from '../components/ProductForm';
 import ProductDetail from '../components/ProductDetail';
-import Dashboard from '../components/Dashboard';
+import Dashboard from '../pages/Dashboard';
 import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
+import UserProfile from './UserProfile';
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
@@ -75,7 +76,7 @@ function ProductManager({ onLogout }) {
   return (
     <div className="dashboard d-flex">
       <Sidebar
-        view={view} // ✅ truyền view vào để Sidebar biết đang ở đâu
+        view={view}
         onNavigate={(view) => {
           setView(view);
           setShowForm(false);
@@ -141,6 +142,7 @@ function ProductManager({ onLogout }) {
             )}
           </>
         )}
+        {view === 'profile' && <UserProfile />}
       </div>
     </div>
   );
