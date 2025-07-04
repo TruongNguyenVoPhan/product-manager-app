@@ -7,7 +7,7 @@ import ProductDetail from '../components/ProductDetail';
 import Dashboard from '../pages/Dashboard';
 import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
-import UserProfile from './UserProfile';
+import UserProfile from '../pages/UserProfile';
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
@@ -20,7 +20,7 @@ function ProductManager({ onLogout }) {
   const getAuthHeader = () => ({
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
+    },  
   });
 
   const fetchProducts = async () => {

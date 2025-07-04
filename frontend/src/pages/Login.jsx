@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import '../styles/Login.css'; // Assuming you have a CSS file for styles
 import { login, getProducts } from '../services/api';
 
-function Login({ onLogin, onSwitch }) {
+function Login({ onLogin, onSwitchToRegister }) {
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -60,14 +61,11 @@ function Login({ onLogin, onSwitch }) {
           Sign In
         </button>
 
-        <p className="text-center mt-3" style={{ fontSize: "14px" }}>
-          Forgot your password?
-        </p>
         <p className="text-center mt-2" style={{ fontSize: "14px" }}>
           Don't have an account?{" "}
           <span
             style={{ color: "#2F80ED", cursor: "pointer", fontWeight: "bold" }}
-            onClick={onSwitch}
+            onClick={onSwitchToRegister}
           >
             Register
           </span>

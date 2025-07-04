@@ -1,21 +1,21 @@
-// src/components/Dashboard.jsx
 import React from 'react';
 import { BarChart, Bar, XAxis, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 function Dashboard({ products }) {
-  const totalValue = products.reduce((sum, p) => sum + p.price, 0);
+  const safeProducts = Array.isArray(products) ? products : [];
+  const totalValue = safeProducts.reduce((sum, p) => sum + p.price, 0);
 
   return (
     <div>
       <h3>📊 Dashboard</h3>
-      <p><strong>Total Products:</strong> {products.length}</p>
+      <p><strong>Total Products:</strong> {safeProducts.length}</p>
       <p><strong>Total Value:</strong> ${totalValue}</p>
 
       <div className="row mt-4">
         <div className="col-md-6">
           <h6>Bar Chart: Product Prices</h6>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={products}>
+            <BarChart data={safeProducts}>
               <XAxis dataKey="name" />
               <Tooltip />
               <Bar dataKey="price" fill="#8884d8" />
@@ -27,7 +27,7 @@ function Dashboard({ products }) {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={products}
+                data={safeProducts}
                 dataKey="price"
                 nameKey="name"
                 cx="50%"
@@ -35,7 +35,7 @@ function Dashboard({ products }) {
                 outerRadius={80}
                 label
               >
-                {products.map((_, index) => (
+                {safeProducts.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={["#00C49F", "#FFBB28", "#0088FE"][index % 3]} />
                 ))}
               </Pie>

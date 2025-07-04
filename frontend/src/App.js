@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductManager from './pages/ProductManager';
 import Dashboard from './pages/Dashboard';
-import UserProfile from './pages/UserProfile'; // nếu có
+import UserProfile from './pages/UserProfile'; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,7 +16,7 @@ function AppWrapper() {
   const handleLogin = () => {
     setIsLoggedIn(true);
     toast.success("Login successful!");
-    navigate("/dashboard");
+    navigate("/products");
   };
 
   const handleLogout = () => {
@@ -36,8 +36,24 @@ function AppWrapper() {
       <Routes>
         {!isLoggedIn ? (
           <>
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/register" element={<Register onRegisterSuccess={handleRegisterSuccess} />} />
+            <Route
+              path="/login"
+              element={
+                <Login
+                  onLogin={handleLogin}
+                  onSwitchToRegister={() => navigate("/register")}
+                />
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <Register
+                  onRegisterSuccess={handleRegisterSuccess}
+                  onSwitchToLogin={() => navigate("/login")}
+                />
+              }
+            />
             <Route path="*" element={<Navigate to="/login" />} />
           </>
         ) : (
@@ -45,7 +61,7 @@ function AppWrapper() {
             <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
             <Route path="/products" element={<ProductManager onLogout={handleLogout} />} />
             <Route path="/profile" element={<UserProfile onLogout={handleLogout} />} />
-            <Route path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="*" element={<Navigate to="/products" />} />
           </>
         )}
       </Routes>
