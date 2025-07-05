@@ -1,13 +1,28 @@
-body {
+html, body, #root {
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.dashboard {
+  display: flex;
+  flex-direction: row;
+  height: 100%;       /* ✅ thay vì min-height: 100vh */
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #1d2b3a;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f4f6f9;
+  height: 100%;       /* ✅ ép cao 100% để fill chiều cao */
 }

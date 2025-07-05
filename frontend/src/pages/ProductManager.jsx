@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard';
 import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
 import UserProfile from '../pages/UserProfile';
+import Spinner from '../components/Spinner';
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
@@ -16,6 +17,8 @@ function ProductManager({ onLogout , userInfo}) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState('dashboard');
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const getAuthHeader = () => ({
     headers: {
@@ -24,15 +27,19 @@ function ProductManager({ onLogout , userInfo}) {
   });
 
   const fetchProducts = async () => {
-    try {
-      const res = await axios.get(API_URL, getAuthHeader());
-      setProducts(res.data);
-    } catch (err) {
-      toast.error('Error fetching products!');
-      localStorage.removeItem('token');
-      onLogout();
-    }
-  };
+      setIsLoading(true);
+      try {
+        const res = await axios.get(API_URL, getAuthHeader());
+        setProducts(res.data);
+      } catch (err) {
+        toast.error('Error fetching products!');
+        localStorage.removeItem('token');
+        onLogout();
+      } finally {
+        setIsLoading(false); // ✅ luôn tắt loading sau khi xong
+      }
+    };
+
 
   const handleSaveProduct = async (product) => {
     const payload = {
@@ -123,21 +130,25 @@ function ProductManager({ onLogout , userInfo}) {
             )}
 
             {!showForm && !selectedProduct && (
-              <div className="row">
-                {products.map((product) => (
-                  <div className="col-md-4 mb-4" key={product._id}>
-                    <ProductCard
-                      product={product}
-                      onEdit={() => {
-                        setShowForm(true);
-                        setSelectedProduct(product);
-                      }}
-                      onDelete={deleteProduct}
-                      onView={() => setSelectedProduct(product)}
-                    />
-                  </div>
-                ))}
-              </div>
+              isLoading ? (
+                <Spinner />
+              ) : (
+                <div className="row">
+                  {products.map((product) => (
+                    <div className="col-md-4 mb-4" key={product._id}>
+                      <ProductCard
+                        product={product}
+                        onEdit={() => {
+                          setShowForm(true);
+                          setSelectedProduct(product);
+                        }}
+                        onDelete={deleteProduct}
+                        onView={() => setSelectedProduct(product)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
             )}
           </>
         )}
