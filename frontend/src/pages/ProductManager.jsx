@@ -92,7 +92,6 @@ function ProductManager({ onLogout }) {
       <div className="main-content flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2>🛍️ Product Manager</h2>
-          <button className="btn btn-outline-danger" onClick={onLogout}>Logout</button>
         </div>
 
         {view === 'dashboard' && <Dashboard products={products} />}
