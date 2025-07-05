@@ -38,8 +38,13 @@ function UserProfile() {
       toast.success('Profile updated successfully!');
       setPassword(''); // clear password field
     } catch (err) {
-      toast.error('Failed to update profile');
+      if (err.response && err.response.status === 400) {
+        toast.info(err.response.data.message || 'No changes to update');
+      } else {
+        toast.error('Failed to update profile');
+      }
     }
+
   };
 
   return (

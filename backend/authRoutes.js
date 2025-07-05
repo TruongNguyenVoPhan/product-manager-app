@@ -91,6 +91,10 @@ router.put('/update', async (req, res) => {
 
     const { name, email, password } = req.body;
 
+    if (!name && !email && !password) {
+      return res.status(400).json({ message: 'No changes to update' });
+    }
+
     if (name !== undefined) user.name = name;
     if (email !== undefined) user.email = email;
     if (password) user.password = await bcrypt.hash(password, 10);
@@ -101,6 +105,7 @@ router.put('/update', async (req, res) => {
     res.status(500).json({ message: 'Update failed', error: err });
   }
 });
+
 
 
 module.exports = router;

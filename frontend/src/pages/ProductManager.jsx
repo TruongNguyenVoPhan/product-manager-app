@@ -11,7 +11,7 @@ import UserProfile from '../pages/UserProfile';
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
-function ProductManager({ onLogout }) {
+function ProductManager({ onLogout , userInfo}) {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -91,7 +91,7 @@ function ProductManager({ onLogout }) {
       />
       <div className="main-content flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2>🛍️ Product Manager</h2>
+          <h5 className="mb-4">👋 Welcome, {userInfo?.name || 'User'}!</h5>
         </div>
 
         {view === 'dashboard' && <Dashboard products={products} />}
