@@ -4,27 +4,25 @@ import '../styles/ProductCard.css';
 
 function ProductCard({ product, onEdit, onDelete, onView }) {
   return (
-    <div className="product-card shadow-sm border rounded-4 p-3 bg-white h-100 d-flex flex-column justify-content-between">
-      <div className="text-center">
-        <img
-          src={product.imageUrl || "/images/noimage.png"}
-          alt={product.name}
-          className="img-fluid rounded-3 mb-3"
-          style={{ maxHeight: '180px', objectFit: 'cover' }}
-        />
-        <h6 className="fw-bold mb-1">{product.name}</h6>
-        <p className="text-muted">${product.price}</p>
-      </div>
-      <div className="d-flex justify-content-around mt-2">
-        <button className="btn btn-sm btn-outline-primary" onClick={() => onView(product)}>
-          <FaEye />
-        </button>
-        <button className="btn btn-sm btn-outline-warning" onClick={() => onEdit(product)}>
-          <FaEdit />
-        </button>
-        <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(product)}>
-          <FaTrash />
-        </button>
+    <div className="card h-100 shadow-sm product-card" onClick={() => onView(product)} style={{ cursor: 'pointer' }}>
+      <img
+        src={product.imageUrl || '/images/noimage.png'}
+        className="card-img-top p-2 object-fit-contain"
+        alt={product.name}
+        style={{ height: 160 }}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = '/images/noimage.png';
+        }}
+      />
+      <div className="card-body text-center">
+        <h6 className="fw-bold text-truncate">{product.name}</h6>
+        <p className="text-muted mb-2">${product.price}</p>
+        <div className="d-flex justify-content-center gap-2">
+          <button className="btn btn-outline-primary btn-sm" onClick={(e) => { e.stopPropagation(); onView(product); }}>👁️</button>
+          <button className="btn btn-outline-warning btn-sm" onClick={(e) => { e.stopPropagation(); onEdit(product); }}>✏️</button>
+          <button className="btn btn-outline-danger btn-sm" onClick={(e) => { e.stopPropagation(); onDelete(product); }}>🗑️</button>
+        </div>
       </div>
     </div>
   );

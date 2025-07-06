@@ -49,3 +49,11 @@
   font-size: 14px;
   transition: background-color 0.2s ease;
 }
+
+.card-img-top {
+  height: 200px;
+  object-fit: contain;
+  width: 100%;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}

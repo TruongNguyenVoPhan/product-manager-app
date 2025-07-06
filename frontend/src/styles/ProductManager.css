@@ -1,22 +1,72 @@
-/* src/styles/ProductManager.css */
-
 .dashboard {
   display: flex;
   height: 100vh;
   background-color: #f5f6fa;
+  overflow: hidden;
 }
 
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.main-content {
+  flex: 1 1 auto;
+  padding: 1.5rem;
   overflow-y: auto;
+  width: 100%;
 }
 
-.content {
-  padding: 20px;
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: absolute;
+    z-index: 1000;
+    width: 240px;
+    height: 100%;
+    background: #1c1f2e;
+  }
+
+  .main-content {
+    padding-left: 0 !important;
+  }
+
+  .product-form,
+  .card {
+    margin: 0 0.5rem;
+  }
+
+  .card-img-top {
+    height: auto;
+    max-height: 200px;
+  }
+
+  .product-card .btn {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  .product-card h5 {
+    font-size: 16px;
+  }
+
+  .product-card p {
+    font-size: 14px;
+  }
 }
-/* Trong ProductManager.css hoặc global */
-.pagination-btns button {
-  min-width: 40px;
+
+.product-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+  object-fit: contain;
+  width: 100%;
+  height: 200px;
+  background: #f8f9fa;
+  border-radius: 10px;
 }

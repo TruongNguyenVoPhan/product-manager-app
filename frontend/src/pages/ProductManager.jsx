@@ -21,6 +21,8 @@ function ProductManager({ onLogout , userInfo}) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   const getAuthHeader = () => ({
     headers: {
@@ -100,22 +102,29 @@ function ProductManager({ onLogout , userInfo}) {
 
   return (
     <div className="dashboard d-flex">
-      <Sidebar
-        view={view}
-        onNavigate={(view) => {
-          setView(view);
-          setShowForm(false);
-          setSelectedProduct(null);
-        }}
-        onLogout={onLogout}
-        onAdd={() => {
-          setView('products');
-          setShowForm(true);
-          setSelectedProduct(null);
-        }}
-      />
+      {(isSidebarOpen || window.innerWidth >= 768) && (
+        <Sidebar
+          view={view}
+          onNavigate={(view) => {
+            setView(view);
+            setShowForm(false);
+            setSelectedProduct(null);
+            setIsSidebarOpen(false); // auto đóng sau khi chọn
+          }}
+          onLogout={onLogout}
+          onAdd={() => {
+            setView('products');
+            setShowForm(true);
+            setSelectedProduct(null);
+            setIsSidebarOpen(false); // auto đóng
+          }}
+        />
+      )}
       <div className="main-content flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
+          <button className="btn btn-outline-dark d-md-none" onClick={() => setIsSidebarOpen(true)}>
+            ☰
+          </button>
           <h5 className="mb-4">👋 Welcome, {userInfo?.username || 'User'}!</h5>
         </div>
         
@@ -168,9 +177,9 @@ function ProductManager({ onLogout , userInfo}) {
                 <p className="text-muted text-center">No matching products found.</p>
               ) : (
                 <>
-                  <div className="row">
+                  <div className="row gx-3 gy-4">
                     {currentProducts.map((product) => (
-                      <div className="col-md-4 mb-4" key={product._id}>
+                     <div className="col-6 col-md-4 col-lg-3 mb-4" key={product._id}>
                         <ProductCard
                           product={product}
                           onEdit={() => {
