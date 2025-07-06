@@ -18,7 +18,9 @@ function ProductManager({ onLogout , userInfo}) {
   const [showForm, setShowForm] = useState(false);
   const [view, setView] = useState('dashboard');
   const [isLoading, setIsLoading] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const getAuthHeader = () => ({
     headers: {
@@ -36,7 +38,7 @@ function ProductManager({ onLogout , userInfo}) {
         localStorage.removeItem('token');
         onLogout();
       } finally {
-        setIsLoading(false); // ✅ luôn tắt loading sau khi xong
+        setIsLoading(false); 
       }
     };
 
@@ -70,7 +72,14 @@ function ProductManager({ onLogout , userInfo}) {
     try {
       await axios.delete(`${API_URL}/${product._id}`, getAuthHeader());
       toast.success('Product deleted!');
-      fetchProducts();
+
+      await fetchProducts();
+      const newTotalPages = Math.ceil((filteredProducts.length - 1) / itemsPerPage);
+
+      if (currentPage > newTotalPages) {
+        setCurrentPage(Math.max(1, newTotalPages));
+      }
+
     } catch {
       toast.error('Delete failed.');
     }
@@ -79,6 +88,15 @@ function ProductManager({ onLogout , userInfo}) {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
 
   return (
     <div className="dashboard d-flex">
@@ -98,18 +116,32 @@ function ProductManager({ onLogout , userInfo}) {
       />
       <div className="main-content flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h5 className="mb-4">👋 Welcome, {userInfo?.name || 'User'}!</h5>
+          <h5 className="mb-4">👋 Welcome, {userInfo?.username || 'User'}!</h5>
         </div>
-
+        
         {view === 'dashboard' && <Dashboard products={products} />}
 
-        {view === 'products' && (
+        
+        {view === 'products' && 
+        (
+          
           <>
             {!showForm && !selectedProduct && (
               <div className="mb-4">
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Product</button>
               </div>
             )}
+            {/*  Search Bar */}
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search product by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
 
             {showForm && (
               <ProductForm
@@ -132,22 +164,55 @@ function ProductManager({ onLogout , userInfo}) {
             {!showForm && !selectedProduct && (
               isLoading ? (
                 <Spinner />
+              ) : filteredProducts.length === 0 ? (
+                <p className="text-muted text-center">No matching products found.</p>
               ) : (
-                <div className="row">
-                  {products.map((product) => (
-                    <div className="col-md-4 mb-4" key={product._id}>
-                      <ProductCard
-                        product={product}
-                        onEdit={() => {
-                          setShowForm(true);
-                          setSelectedProduct(product);
-                        }}
-                        onDelete={deleteProduct}
-                        onView={() => setSelectedProduct(product)}
-                      />
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <div className="row">
+                    {currentProducts.map((product) => (
+                      <div className="col-md-4 mb-4" key={product._id}>
+                        <ProductCard
+                          product={product}
+                          onEdit={() => {
+                            setShowForm(true);
+                            setSelectedProduct(product);
+                          }}
+                          onDelete={deleteProduct}
+                          onView={() => setSelectedProduct(product)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination controls */}
+                  <div className="d-flex justify-content-center mt-3 gap-2 flex-wrap">
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      « Prev
+                    </button>
+
+                    {[...Array(totalPages)].map((_, i) => (
+                      <button
+                        key={i}
+                        className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next »
+                    </button>
+                  </div>
+                </>
               )
             )}
           </>

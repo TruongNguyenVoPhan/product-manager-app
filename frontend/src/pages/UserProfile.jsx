@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 function UserProfile() {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -16,7 +16,7 @@ function UserProfile() {
         const res = await axios.get('https://product-api-7ric.onrender.com/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setName(res.data.name || '');
+        setUsername(res.data.username || '');
         setEmail(res.data.email || '');
       } catch (err) {
         toast.error('Failed to fetch user info');
@@ -31,7 +31,7 @@ function UserProfile() {
     try {
       await axios.put(
         'https://product-api-7ric.onrender.com/auth/update',
-        { name, email, password },
+        { username, email, password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -52,9 +52,9 @@ function UserProfile() {
       <h5>👤 Edit Profile</h5>
       <input
         className="form-control mb-2"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <input
         className="form-control mb-2"

@@ -16,3 +16,7 @@
 .content {
   padding: 20px;
 }
+/* Trong ProductManager.css hoặc global */
+.pagination-btns button {
+  min-width: 40px;
+}

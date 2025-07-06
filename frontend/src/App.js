@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -25,6 +25,7 @@ function AppWrapper() {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     setUserInfo(res.data); 
+    localStorage.setItem('userInfo', JSON.stringify(res.data));
   } catch (err) {
     toast.error("Failed to load user info");
   }
@@ -32,12 +33,21 @@ function AppWrapper() {
   navigate("/products");
 };
 
+  useEffect(() => {
+    const savedUser = localStorage.getItem('userInfo');
+    if (savedUser) {
+      setUserInfo(JSON.parse(savedUser));
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userInfo"); // ✅ clear luôn user
     setIsLoggedIn(false);
+    setUserInfo(null);
     navigate("/login");
   };
+
 
   const handleRegisterSuccess = () => {
     toast.success("Registration successful. Please login!");

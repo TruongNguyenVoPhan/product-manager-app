@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { toast } from 'react-toastify';
 function ProductForm({ product, onSave, onCancel }) {
   const [name, setName] = useState(product?.name || '');
   const [price, setPrice] = useState(product?.price || '');
@@ -14,15 +14,26 @@ function ProductForm({ product, onSave, onCancel }) {
   }, [product]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!name || !price) return alert("Please fill in all fields");
-    onSave({ ...product, name, price, imageUrl });
+    e.preventDefault(); //  Ngăn reload form
+    if (!name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
+    if (!price || isNaN(price) || Number(price) <= 0) {
+      toast.error("Price must be a positive number");
+      return;
+    }
+
+    onSave({ _id: product?._id, name, price, imageUrl });
+
   };
+
 
   return (
     <div className="product-form card p-4 mb-4">
       <h4 className="mb-4 fw-bold">
-        {product ? 'Edit Product' : 'Add New Product'}
+        {product && product._id ? 'Edit Product' : 'Add New Product'}
       </h4>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -58,7 +69,7 @@ function ProductForm({ product, onSave, onCancel }) {
 
         <div className="d-flex gap-2">
           <button type="submit" className="btn btn-primary w-100">
-            {product ? 'Update' : 'Add'}
+            {product && product._id ? 'Update' : 'Add'}
           </button>
           {onCancel && (
             <button type="button" className="btn btn-outline-secondary w-100" onClick={onCancel}>
