@@ -20,7 +20,7 @@ function ProductManager({ onLogout , userInfo}) {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 

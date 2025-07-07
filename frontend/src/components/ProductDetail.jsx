@@ -3,17 +3,20 @@ import '../styles/ProductDetail.css';
 
 function ProductDetail({ product, onBack }) {
   return (
-    <div className="card p-4">
-      <h4>Product Detail</h4>
+    <div className="product-detail">
       <img
-        src={product.imageUrl || "/images/noimage.png"}
+        src={product.imageUrl || '/images/noimage.png'}
         alt={product.name}
-        className="product-detail-image mb-3"
-        />
+        onError={(e) => { e.target.onerror = null; e.target.src = '/images/noimage.png'; }}
+      />
+      <div className="product-info">
+        <h3>{product.name}</h3>
+        <p className="price">${product.price}</p>
+        <p><strong>Quantity:</strong> {product.quantity ?? 'N/A'}</p>
+        <p><strong>Description:</strong> {product.description || 'No description available.'}</p>
 
-      <h5 className="mt-3">{product.name}</h5>
-      <p><strong>Price:</strong> ${product.price}</p>
-      <button className="btn btn-secondary mt-3" onClick={onBack}>Back</button>
+        <button className="btn btn-secondary" onClick={onBack}>← Back</button>
+      </div>
     </div>
   );
 }
