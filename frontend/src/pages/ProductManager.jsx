@@ -50,7 +50,10 @@ function ProductManager({ onLogout , userInfo}) {
       name: product.name.trim(),
       price: Number(product.price),
       imageUrl: product.imageUrl.trim() || '',
+      quantity: Number(product.quantity),
+      description: product.description?.trim() || ''
     };
+
 
     try {
       if (product._id) {
@@ -131,11 +134,20 @@ function ProductManager({ onLogout , userInfo}) {
         {view === 'dashboard' && <Dashboard products={products} />}
 
         
-        {view === 'products' && 
-        (
-          
-          <>
-           {!showForm && !selectedProduct && (
+        {view === 'products' && (
+        <>
+          {showForm && (
+            <ProductForm
+              product={selectedProduct}
+              onSave={handleSaveProduct}
+              onCancel={() => {
+                setShowForm(false);
+                setSelectedProduct(null);
+              }}
+            />
+          )}
+
+          {!showForm && !selectedProduct && (
             <>
               <div className="mb-4">
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Product</button>
@@ -153,70 +165,70 @@ function ProductManager({ onLogout , userInfo}) {
             </>
           )}
 
+          {selectedProduct && !showForm && (
+            <ProductDetail
+              product={selectedProduct}
+              onBack={() => setSelectedProduct(null)}
+            />
+          )}
 
-            {selectedProduct && !showForm && (
-              <ProductDetail
-                product={selectedProduct}
-                onBack={() => setSelectedProduct(null)}
-              />
-            )}
+          {!showForm && !selectedProduct && (
+            isLoading ? (
+              <Spinner />
+            ) : filteredProducts.length === 0 ? (
+              <p className="text-muted text-center">No matching products found.</p>
+            ) : (
+              <>
+                <div className="row gx-3 gy-4">
+                  {currentProducts.map((product) => (
+                    <div className="col-6 col-md-4 col-lg-3 mb-4" key={product._id}>
+                      <ProductCard
+                        product={product}
+                        onEdit={() => {
+                          setShowForm(true);
+                          setSelectedProduct(product);
+                        }}
+                        onDelete={deleteProduct}
+                        onView={() => setSelectedProduct(product)}
+                      />
+                    </div>
+                  ))}
+                </div>
 
-            {!showForm && !selectedProduct && (
-              isLoading ? (
-                <Spinner />
-              ) : filteredProducts.length === 0 ? (
-                <p className="text-muted text-center">No matching products found.</p>
-              ) : (
-                <>
-                  <div className="row gx-3 gy-4">
-                    {currentProducts.map((product) => (
-                     <div className="col-6 col-md-4 col-lg-3 mb-4" key={product._id}>
-                        <ProductCard
-                          product={product}
-                          onEdit={() => {
-                            setShowForm(true);
-                            setSelectedProduct(product);
-                          }}
-                          onDelete={deleteProduct}
-                          onView={() => setSelectedProduct(product)}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                {/* Pagination controls */}
+                <div className="d-flex justify-content-center mt-3 gap-2 flex-wrap">
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    « Prev
+                  </button>
 
-                  {/* Pagination controls */}
-                  <div className="d-flex justify-content-center mt-3 gap-2 flex-wrap">
+                  {[...Array(totalPages)].map((_, i) => (
                     <button
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
+                      key={i}
+                      className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => setCurrentPage(i + 1)}
                     >
-                      « Prev
+                      {i + 1}
                     </button>
+                  ))}
 
-                    {[...Array(totalPages)].map((_, i) => (
-                      <button
-                        key={i}
-                        className={`btn btn-sm ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline-primary'}`}
-                        onClick={() => setCurrentPage(i + 1)}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next »
+                  </button>
+                </div>
+              </>
+            )
+          )}
+        </>
+      )}
 
-                    <button
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next »
-                    </button>
-                  </div>
-                </>
-              )
-            )}
-          </>
-        )}
         {view === 'profile' && <UserProfile />}
       </div>
     </div>
