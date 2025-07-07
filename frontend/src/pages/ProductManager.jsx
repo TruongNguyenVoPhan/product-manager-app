@@ -135,33 +135,24 @@ function ProductManager({ onLogout , userInfo}) {
         (
           
           <>
-            {!showForm && !selectedProduct && (
+           {!showForm && !selectedProduct && (
+            <>
               <div className="mb-4">
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Product</button>
               </div>
-            )}
-            {/*  Search Bar */}
-            <div className="mb-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search product by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
 
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search product by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </>
+          )}
 
-            {showForm && (
-              <ProductForm
-                product={selectedProduct}
-                onSave={handleSaveProduct}
-                onCancel={() => {
-                  setShowForm(false);
-                  setSelectedProduct(null);
-                }}
-              />
-            )}
 
             {selectedProduct && !showForm && (
               <ProductDetail
