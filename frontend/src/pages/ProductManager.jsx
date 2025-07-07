@@ -108,19 +108,20 @@ function ProductManager({ onLogout , userInfo}) {
       {(isSidebarOpen || window.innerWidth >= 768) && (
         <Sidebar
           view={view}
+          isOpen={isSidebarOpen}
           onNavigate={(view) => {
             setView(view);
             setShowForm(false);
             setSelectedProduct(null);
-            setIsSidebarOpen(false); // auto đóng sau khi chọn
+            setIsSidebarOpen(false);
           }}
-          onLogout={onLogout}
           onAdd={() => {
             setView('products');
             setShowForm(true);
             setSelectedProduct(null);
-            setIsSidebarOpen(false); // auto đóng
+            setIsSidebarOpen(false);
           }}
+          onLogout={onLogout}
         />
       )}
       <div className="main-content flex-grow-1 p-4">

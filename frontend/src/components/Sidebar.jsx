@@ -2,9 +2,9 @@ import React from 'react';
 import { FaTachometerAlt, FaBoxOpen, FaUserEdit, FaSignOutAlt } from 'react-icons/fa';
 import '../styles/Sidebar.css';
 
-function Sidebar({ view, onNavigate, onLogout }) {
+function Sidebar({ view, onNavigate, onLogout, isOpen }) {
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <h4 className="sidebar-logo">🛍️ Shop Admin</h4>
       <nav className="sidebar-menu">
         <div className={`sidebar-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => onNavigate('dashboard')}>
