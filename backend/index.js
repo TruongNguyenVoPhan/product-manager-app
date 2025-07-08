@@ -2,31 +2,33 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 const cors = require('cors');
-const authRoutes = require('./authRoutes'); // Đường dẫn đến authRoutes
-const authMiddleware = require('./authMiddleware'); // Middleware xác thực
+const authRoutes = require('./authRoutes');
+const authMiddleware = require('./authMiddleware');
 
-require('./db'); // Kết nối MongoDB
-const Product = require('./productModel'); // Model
+require('./db');
+const Product = require('./productModel');
+const Category = require('./categoryModel');
 
 app.use(express.json());
 app.use(cors());
-app.use('/auth', authRoutes); // Sử dụng authRoutes
-app.use('/products',authMiddleware); // Sử dụng middleware xác thực cho các route bên dưới
+app.use('/auth', authRoutes);
+app.use('/products', authMiddleware);
 
-// Get all products
+
+app.use('/categories', authMiddleware);
+
+
 app.get('/products', async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find().populate('category');
   res.json(products);
 });
 
-// Add new product
 app.post('/products', async (req, res) => {
   const newProduct = new Product(req.body);
   const saved = await newProduct.save();
   res.status(201).json(saved);
 });
 
-// Update product
 app.put('/products/:id', async (req, res) => {
   try {
     const updated = await Product.findByIdAndUpdate(
@@ -36,22 +38,38 @@ app.put('/products/:id', async (req, res) => {
           name: req.body.name,
           price: req.body.price,
           imageUrl: req.body.imageUrl || '',
+          description: req.body.description,
+          quantity: req.body.quantity,
+          category: req.body.category
         },
       },
       { new: true, runValidators: true }
     );
     res.json(updated);
   } catch (error) {
-    console.error("Update error:", error);
     res.status(500).json({ message: "Update failed", error });
   }
 });
 
-
-// Delete product
 app.delete('/products/:id', async (req, res) => {
   await Product.findByIdAndDelete(req.params.id);
   res.status(204).end();
+});
+
+app.get('/categories', async (req, res) => {
+  const categories = await Category.find();
+  res.json(categories);
+});
+
+
+app.post('/categories', async (req, res) => {
+  try {
+    const newCategory = new Category({ name: req.body.name });
+    const saved = await newCategory.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(400).json({ message: 'Failed to create category', error: err.message });
+  }
 });
 
 app.listen(PORT, () => {
