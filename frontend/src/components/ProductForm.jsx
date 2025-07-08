@@ -25,10 +25,16 @@ function ProductForm({ product, onSave, onCancel }) {
   }, [product]);
 
   useEffect(() => {
-    axios.get(CATEGORY_API)
+    const token = localStorage.getItem('token');
+    axios.get(CATEGORY_API, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(res => setCategories(res.data))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();

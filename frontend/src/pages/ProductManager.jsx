@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import '../styles/ProductManager.css';
 import UserProfile from '../pages/UserProfile';
 import Spinner from '../components/Spinner';
+import CategoryManager from '../components/CategoryManager';
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
@@ -22,6 +23,7 @@ function ProductManager({ onLogout , userInfo}) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
 
   const getAuthHeader = () => ({
@@ -134,6 +136,7 @@ function ProductManager({ onLogout , userInfo}) {
         
         {view === 'dashboard' && <Dashboard products={products} />}
 
+        {view === 'categories' && <CategoryManager />}
         
         {view === 'products' && (
         <>
@@ -165,6 +168,8 @@ function ProductManager({ onLogout , userInfo}) {
               </div>
             </>
           )}
+
+          
 
           {selectedProduct && !showForm && (
             <ProductDetail

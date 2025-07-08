@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTachometerAlt, FaBoxOpen, FaUserEdit, FaSignOutAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaBoxOpen, FaUserEdit, FaSignOutAlt, FaTags } from 'react-icons/fa';
 import '../styles/Sidebar.css';
 
 function Sidebar({ view, onNavigate, onLogout, isOpen }) {
@@ -14,6 +14,10 @@ function Sidebar({ view, onNavigate, onLogout, isOpen }) {
         <div className={`sidebar-item ${view === 'products' ? 'active' : ''}`} onClick={() => onNavigate('products')}>
           <FaBoxOpen className="sidebar-icon" />
           <span>Products</span>
+        </div>
+        <div className={`sidebar-item ${view === 'categories' ? 'active' : ''}`} onClick={() => onNavigate('categories')}>
+          <FaTags className="sidebar-icon" />
+          <span>Categories</span>
         </div>
         <div className={`sidebar-item ${view === 'profile' ? 'active' : ''}`} onClick={() => onNavigate('profile')}>
           <FaUserEdit className="sidebar-icon" />
