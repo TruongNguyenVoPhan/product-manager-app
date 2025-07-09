@@ -17,12 +17,6 @@ app.use('/products', authMiddleware);
 
 app.use('/categories', authMiddleware);
 
-
-app.get('/products', async (req, res) => {
-  const products = await Product.find().populate('category');
-  res.json(products);
-});
-
 app.post('/products', async (req, res) => {
   const newProduct = new Product(req.body);
   const saved = await newProduct.save();
@@ -69,6 +63,15 @@ app.get('/products', async (req, res) => {
     res.json(products);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch products', error: err.message });
+  }
+});
+
+app.get('/categories', async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch categories', error: err.message });
   }
 });
 
