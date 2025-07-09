@@ -56,9 +56,20 @@ app.delete('/products/:id', async (req, res) => {
   res.status(204).end();
 });
 
-app.get('/categories', async (req, res) => {
-  const categories = await Category.find();
-  res.json(categories);
+app.get('/products', async (req, res) => {
+  try {
+    const { category } = req.query;
+
+    const filter = {};
+    if (category) {
+      filter.category = category;
+    }
+
+    const products = await Product.find(filter).populate('category');
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch products', error: err.message });
+  }
 });
 
 

@@ -24,6 +24,8 @@ function ProductManager({ onLogout , userInfo}) {
   const itemsPerPage = 8;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
 
 
   const getAuthHeader = () => ({
@@ -157,7 +159,8 @@ function ProductManager({ onLogout , userInfo}) {
                 <button className="btn btn-primary" onClick={() => setShowForm(true)}>+ Add Product</button>
               </div>
 
-              <div className="mb-3">
+              <div className="row mb-3 g-2">
+              <div className="col-md-6">
                 <input
                   type="text"
                   className="form-control"
@@ -166,6 +169,19 @@ function ProductManager({ onLogout , userInfo}) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <div className="col-md-6">
+                <select
+                  className="form-select"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             </>
           )}
 
