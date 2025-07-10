@@ -18,7 +18,7 @@ function CategoryManager() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(CATEGORY_API, getAuthHeader());
+      const res = await axios.get(`${CATEGORY_API}/with-count`, getAuthHeader());
       setCategories(res.data);
     } catch (err) {
       toast.error('Failed to load categories');
@@ -94,7 +94,10 @@ function CategoryManager() {
               </>
             ) : (
               <>
-                <span>{cat.name}</span>
+                <span>
+                  {cat.name} 
+                  <span className="badge bg-primary ms-2">{cat.productCount || 0}</span>
+                </span>
                 <div>
                   <button className="btn btn-warning btn-sm me-2" onClick={() => { setEditingId(cat._id); setEditingName(cat.name); }}>Edit</button>
                   <button className="btn btn-danger btn-sm" onClick={() => handleDelete(cat._id)}>Delete</button>

@@ -34,19 +34,41 @@ function ProductManager({ onLogout , userInfo}) {
     },  
   });
 
-  const fetchProducts = async () => {
+    const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(API_URL, getAuthHeader());
+        let url = API_URL;
+        if (selectedCategory) {
+          url += `?category=${selectedCategory}`;
+        }
+        const res = await axios.get(url, getAuthHeader());
         setProducts(res.data);
       } catch (err) {
         toast.error('Error fetching products!');
         localStorage.removeItem('token');
         onLogout();
       } finally {
-        setIsLoading(false); 
+        setIsLoading(false);
       }
     };
+
+
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(
+          'https://product-api-7ric.onrender.com/categories',
+          getAuthHeader()
+        );
+        setCategories(res.data);
+      } catch (err) {
+        toast.error('Failed to load categories');
+      }
+    };
+
+    // Gọi một lần khi component mount
+    useEffect(() => {
+      fetchCategories();
+    }, []);
 
 
   const handleSaveProduct = async (product) => {
@@ -55,7 +77,8 @@ function ProductManager({ onLogout , userInfo}) {
       price: Number(product.price),
       imageUrl: product.imageUrl.trim() || '',
       quantity: Number(product.quantity),
-      description: product.description?.trim() || ''
+      description: product.description?.trim() || '',
+      category: product.category
     };
 
 
@@ -96,7 +119,8 @@ function ProductManager({ onLogout , userInfo}) {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+    setCurrentPage(1);       
+  }, [selectedCategory]);
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())

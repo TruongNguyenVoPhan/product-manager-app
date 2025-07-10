@@ -75,6 +75,31 @@ app.get('/categories', async (req, res) => {
   }
 });
 
+// GET /categories/with-count
+app.get('/categories/with-count', authMiddleware, async (req, res) => {
+  try {
+    const result = await Category.aggregate([
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: 'category',
+          as: 'products',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          productCount: { $size: '$products' },
+        },
+      },
+    ]);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch categories with count', error: err.message });
+  }
+});
+
 
 app.post('/categories', async (req, res) => {
   try {
