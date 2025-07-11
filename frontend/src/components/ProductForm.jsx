@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { lockProduct, unlockProduct } from '../services/productService';
 
 const CATEGORY_API = 'https://product-api-7ric.onrender.com/categories';
 
@@ -35,6 +36,28 @@ function ProductForm({ product, onSave, onCancel }) {
       .catch(() => toast.error('Failed to load categories'));
   }, []);
 
+  useEffect(() => {
+    const tryLock = async () => {
+      if (product?._id) {
+        const success = await lockProduct(product._id);
+        if (!success) {
+          toast.error('Failed to lock product for editing');
+          onCancel(); // thoát form nếu không thể khóa
+          return;
+        }
+      }
+    };
+
+    tryLock();
+
+    return () => {
+      if (product?._id) {
+        unlockProduct(product._id).catch(err => {
+          console.error('Failed to unlock product:', err);
+        });
+      }
+    };
+  }, [product, onCancel]);  
 
   const handleSubmit = (e) => {
     e.preventDefault();
