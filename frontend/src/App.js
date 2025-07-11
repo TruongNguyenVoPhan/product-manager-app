@@ -8,7 +8,7 @@ import UserProfile from './pages/UserProfile';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
+import API from './services/axiosInstance'
 
 
 function AppWrapper() {
@@ -21,9 +21,7 @@ function AppWrapper() {
   toast.success("Login successful!");
 
   try {
-    const res = await axios.get('https://product-api-7ric.onrender.com/auth/me', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
+    const res = await API.get('/auth/me');
     setUserInfo(res.data); 
     localStorage.setItem('userInfo', JSON.stringify(res.data));
   } catch (err) {
@@ -39,6 +37,30 @@ function AppWrapper() {
       setUserInfo(JSON.parse(savedUser));
     }
   }, []);
+
+  useEffect(() => {
+    const handleLogout = () => {
+      toast.error("Session expired.");
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      setIsLoggedIn(false);
+      setUserInfo(null);
+      navigate("/login");
+    };
+
+    window.addEventListener('tokenExpired', handleLogout);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'logout-event') handleLogout();
+    });
+
+    return () => {
+      window.removeEventListener('tokenExpired', handleLogout);
+      window.removeEventListener('storage', handleLogout);
+    };
+  }, []);
+
+
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");

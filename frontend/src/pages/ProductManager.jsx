@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from '../services/axiosInstance';
 import ProductCard from '../components/ProductCard';
 import Sidebar from '../components/Sidebar';
 import ProductForm from '../components/ProductForm';
@@ -27,13 +27,6 @@ function ProductManager({ onLogout , userInfo}) {
   const [selectedCategory, setSelectedCategory] = useState('');
 
 
-
-  const getAuthHeader = () => ({
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },  
-  });
-
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
@@ -41,7 +34,7 @@ function ProductManager({ onLogout , userInfo}) {
         if (selectedCategory) {
           url += `?category=${selectedCategory}`;
         }
-        const res = await axios.get(url, getAuthHeader());
+        const res = await API.get(url);
         setProducts(res.data);
       } catch (err) {
         toast.error('Error fetching products!');
@@ -55,10 +48,7 @@ function ProductManager({ onLogout , userInfo}) {
 
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(
-          'https://product-api-7ric.onrender.com/categories',
-          getAuthHeader()
-        );
+        const res = await API.get('https://product-api-7ric.onrender.com/categories',);
         setCategories(res.data);
       } catch (err) {
         toast.error('Failed to load categories');
@@ -84,10 +74,10 @@ function ProductManager({ onLogout , userInfo}) {
 
     try {
       if (product._id) {
-        await axios.put(`${API_URL}/${product._id}`, payload, getAuthHeader());
+        await API.put(`${API_URL}/${product._id}`, payload);
         toast.success('Product updated!');
       } else {
-        await axios.post(API_URL, payload, getAuthHeader());
+        await API.post(API_URL, payload);
         toast.success('Product added!');
       }
 
@@ -102,7 +92,7 @@ function ProductManager({ onLogout , userInfo}) {
   const deleteProduct = async (product) => {
     if (!window.confirm(`Delete "${product.name}"?`)) return;
     try {
-      await axios.delete(`${API_URL}/${product._id}`, getAuthHeader());
+      await API.delete(`${API_URL}/${product._id}`);
       toast.success('Product deleted!');
 
       await fetchProducts();
