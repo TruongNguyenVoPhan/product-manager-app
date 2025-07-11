@@ -13,11 +13,11 @@ async function authMiddleware(req, res, next) {
     try {
         const decoded = jwt.verify(token, SECRET);
         
-        const user = await User.findById(decoded.userId); // Tìm người dùng theo ID từ token
+        const user = await User.findById(decoded.id); 
         if (!user|| user.curruntToken !== token) {
             return res.status(401).json({ message: 'Session expired or logged in elsewhere' });
         }
-        req.user = decoded; // Lưu thông tin người dùng vào req.user
+        req.user = { id: user._id, username: user.username }; // Lưu thông tin người dùng vào req.user
         next(); // Tiếp tục xử lý request
     }catch (error) {
         console.error('JWT verification error:', error);
