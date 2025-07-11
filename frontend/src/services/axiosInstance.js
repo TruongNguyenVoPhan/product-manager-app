@@ -20,20 +20,21 @@ API.interceptors.response.use(
   response => response,
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        toast.error("Session expired. You have been logged out.");
+      toast.error("Session expired. You have been logged out.");
 
-        // Xoá local
-        localStorage.removeItem('token');
-        localStorage.removeItem('userInfo');
+      // Xoá token
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
 
-        // Bắn event sang các tab khác
-        localStorage.setItem('logout-event', Date.now());
-
-        // Gọi event nội bộ luôn để tab hiện tại cũng logout
-        window.dispatchEvent(new Event('tokenExpired')); // ✅ NẾU bạn vẫn dùng listener trong AppWrapper
-        }
+      // Gửi event sang các tab khác và chính tab hiện tại
+      localStorage.setItem('logout-event', Date.now());
+      window.dispatchEvent(new Event('tokenExpired'));
     }
+
+    return Promise.reject(error);
+  }
 );
+
 
 
 export default API;

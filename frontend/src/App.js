@@ -32,13 +32,6 @@ function AppWrapper() {
 };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('userInfo');
-    if (savedUser) {
-      setUserInfo(JSON.parse(savedUser));
-    }
-  }, []);
-
-  useEffect(() => {
     const handleLogout = () => {
       toast.error("Session expired.");
       localStorage.removeItem('token');
@@ -48,19 +41,34 @@ function AppWrapper() {
       navigate("/login");
     };
 
-    window.addEventListener('tokenExpired', handleLogout);
-    window.addEventListener('storage', (e) => {
+    const onStorage = (e) => {
       if (e.key === 'logout-event') handleLogout();
-    });
+    };
+
+    window.addEventListener('tokenExpired', handleLogout);
+    window.addEventListener('storage', onStorage);
 
     return () => {
       window.removeEventListener('tokenExpired', handleLogout);
-      window.removeEventListener('storage', handleLogout);
+      window.removeEventListener('storage', onStorage);
     };
   }, []);
 
 
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
+      try {
+        await API.get('/auth/me'); // nếu lỗi 401 thì sẽ bị catch
+      } catch (err) {
+        window.dispatchEvent(new Event('tokenExpired'));
+      }
+    };
+
+    checkToken();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

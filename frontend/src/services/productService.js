@@ -1,30 +1,20 @@
-import axios from "axios";
-import { toast } from "react-toastify";
-
-const API_BASE = 'https://product-api-7ric.onrender.com';
-
-const getAuthHeader = () => ({
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
-});
+import API from './axiosInstance';
+import { toast } from 'react-toastify';
 
 export const lockProduct = async (productId) => {
   try {
-    await axios.put(`${API_BASE}/products/${productId}/lock`, {}, getAuthHeader());
+    await API.put(`/products/${productId}/lock`);
     return true;
   } catch (err) {
-    toast.error(err.response?.data?.message || 'Failed to lock product');
-    throw false;
+    toast.error(err.response?.data?.message || 'Cannot lock product');
+    return false;
   }
-}
+};
 
 export const unlockProduct = async (productId) => {
   try {
-    await axios.put(`${API_BASE}/products/${productId}/unlock`, {}, getAuthHeader());
-    return true;
+    await API.put(`/products/${productId}/unlock`);
   } catch (err) {
-    toast.error(err.response?.data?.message || 'Failed to unlock product');
-    throw false;
+    console.error('Unlock failed:', err.response?.data?.message);
   }
-}
+};

@@ -10,6 +10,8 @@ import '../styles/ProductManager.css';
 import UserProfile from '../pages/UserProfile';
 import Spinner from '../components/Spinner';
 import CategoryManager from '../components/CategoryManager';
+import { lockProduct, unlockProduct } from '../services/productService';
+
 
 const API_URL = 'https://product-api-7ric.onrender.com/products';
 
@@ -220,9 +222,12 @@ function ProductManager({ onLogout , userInfo}) {
                     <div className="col-6 col-md-4 col-lg-3 mb-4" key={product._id}>
                       <ProductCard
                         product={product}
-                        onEdit={() => {
-                          setShowForm(true);
-                          setSelectedProduct(product);
+                        onEdit={async () => {
+                          const success = await lockProduct(product._id);
+                          if (success) {
+                            setSelectedProduct(product);
+                            setShowForm(true);
+                          }
                         }}
                         onDelete={deleteProduct}
                         onView={() => setSelectedProduct(product)}
