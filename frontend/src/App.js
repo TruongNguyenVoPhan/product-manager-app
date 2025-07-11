@@ -1,87 +1,72 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductManager from './pages/ProductManager';
 import Dashboard from './pages/Dashboard';
-import UserProfile from './pages/UserProfile'; 
+import UserProfile from './pages/UserProfile';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import API from './services/axiosInstance'
-
+import API from './services/axiosInstance';
 
 function AppWrapper() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
+  const [tokenExpiredFlag, setTokenExpiredFlag] = useState(false); // NEW FLAG
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-  setIsLoggedIn(true);
-  toast.success("Login successful!");
+    setIsLoggedIn(true);
+    toast.success("Login successful!");
 
-  try {
-    const res = await API.get('/auth/me');
-    setUserInfo(res.data); 
-    localStorage.setItem('userInfo', JSON.stringify(res.data));
-  } catch (err) {
-    toast.error("Failed to load user info");
-  }
+    try {
+      const res = await API.get('/auth/me');
+      setUserInfo(res.data);
+      localStorage.setItem('userInfo', JSON.stringify(res.data));
 
-  navigate("/products");
-};
+      // 🔥 Đánh dấu đăng nhập mới bằng thời gian → các tab khác sẽ tự logout
+      localStorage.setItem('new-login', Date.now());
+    } catch (err) {
+      toast.error("Failed to load user info");
+    }
 
-  useEffect(() => {
-    const handleLogout = () => {
-      toast.error("Session expired.");
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
-      setIsLoggedIn(false);
-      setUserInfo(null);
-      navigate("/login");
-    };
-
-    const onStorage = (e) => {
-      if (e.key === 'logout-event') handleLogout();
-    };
-
-    window.addEventListener('tokenExpired', handleLogout);
-    window.addEventListener('storage', onStorage);
-
-    return () => {
-      window.removeEventListener('tokenExpired', handleLogout);
-      window.removeEventListener('storage', onStorage);
-    };
-  }, []);
-
-
-  useEffect(() => {
-    const checkToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      try {
-        await API.get('/auth/me'); // nếu lỗi 401 thì sẽ bị catch
-      } catch (err) {
-        window.dispatchEvent(new Event('tokenExpired'));
-      }
-    };
-
-    checkToken();
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo"); // ✅ clear luôn user
-    setIsLoggedIn(false);
-    setUserInfo(null);
-    navigate("/login");
+    navigate("/products");
   };
 
 
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'new-login') {
+        // 🔥 Nếu tab khác đăng nhập → logout ở tab hiện tại
+        toast.warn("You have been logged out because of login in another tab.");
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        setIsLoggedIn(false);
+        setUserInfo(null);
+        navigate('/login');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // ✅ Logout thủ công
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    navigate('/login');
+  };
+
+  // ✅ Đăng ký thành công → chuyển sang login
   const handleRegisterSuccess = () => {
-    toast.success("Registration successful. Please login!");
-    navigate("/login");
+    toast.success('Registration successful. Please login!');
+    navigate('/login');
   };
 
   return (
@@ -95,7 +80,7 @@ function AppWrapper() {
               element={
                 <Login
                   onLogin={handleLogin}
-                  onSwitchToRegister={() => navigate("/register")}
+                  onSwitchToRegister={() => navigate('/register')}
                 />
               }
             />
@@ -104,7 +89,7 @@ function AppWrapper() {
               element={
                 <Register
                   onRegisterSuccess={handleRegisterSuccess}
-                  onSwitchToLogin={() => navigate("/login")}
+                  onSwitchToLogin={() => navigate('/login')}
                 />
               }
             />
