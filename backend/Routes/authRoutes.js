@@ -57,9 +57,9 @@ router.post('/login', async (req, res) => {
         }
         
         const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' });
-        res.json({ token });
         user.curruntToken = token; // Lưu token vào user
         await user.save(); // Cập nhật token vào cơ sở dữ liệu
+        res.json({ token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
     }
