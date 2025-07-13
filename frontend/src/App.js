@@ -13,7 +13,7 @@ import API from './services/axiosInstance';
 function AppWrapper() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [userInfo, setUserInfo] = useState(null);
-  const [tokenExpiredFlag, setTokenExpiredFlag] = useState(false); // NEW FLAG
+  const [tokenExpiredFlag, setTokenExpiredFlag] = useState(false); 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -25,7 +25,6 @@ function AppWrapper() {
       setUserInfo(res.data);
       localStorage.setItem('userInfo', JSON.stringify(res.data));
 
-      // 🔥 Đánh dấu đăng nhập mới bằng thời gian → các tab khác sẽ tự logout
       localStorage.setItem('new-login', Date.now());
     } catch (err) {
       toast.error("Failed to load user info");
@@ -38,7 +37,6 @@ function AppWrapper() {
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'new-login') {
-        // 🔥 Nếu tab khác đăng nhập → logout ở tab hiện tại
         toast.warn("You have been logged out because of login in another tab.");
         localStorage.removeItem('token');
         localStorage.removeItem('userInfo');
@@ -54,7 +52,6 @@ function AppWrapper() {
     };
   }, []);
 
-  // ✅ Logout thủ công
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
@@ -63,7 +60,6 @@ function AppWrapper() {
     navigate('/login');
   };
 
-  // ✅ Đăng ký thành công → chuyển sang login
   const handleRegisterSuccess = () => {
     toast.success('Registration successful. Please login!');
     navigate('/login');
